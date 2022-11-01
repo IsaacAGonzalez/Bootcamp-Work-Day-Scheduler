@@ -15,20 +15,20 @@ let timeFormatted = DateTime.now().toLocaleString(DateTime.TIME_SIMPLE);
 
 [currentHour, currentMinute] = time.split(':');
 
-let hours = [...Array(24).keys()]; // 24hr array
+let hoursArray = [...Array(24).keys()]; // 24hr array
 
 function createTable() {
-  for (let i = 0; i < hours.length; i++) {
+  for (let i = 0; i < hoursArray.length; i++) {
     let row = $('<div>');
-    row.attr('hour', i);
     row.addClass('time-block row');
 
     let hourSection = $('<div>');
     hourSection.addClass('col-1 hour');
-    hourSection.text(DateTime.now().set({hour: i, minute: 0}).toLocaleString(DateTime.TIME_SIMPLE));
-    
+    hourSection.text(DateTime.now().set({ hour: i, minute: 0 }).toFormat('ha'));
+
     let descriptionSection = $('<input>');
     descriptionSection.addClass('col-10 description');
+    descriptionSection.attr('hour', i);
 
     let saveSection = $('<div>');
     saveSection.addClass('col-1 saveBtn');
@@ -54,7 +54,25 @@ function createTable() {
 
 }
 
-createTable();
+function loadStorage() {
+  for (let i = 0; i < hoursArray.length; i++) {
+    let savedText = localStorage.getItem(i);
+    if (savedText !== null) {
+      container.children().children('.description')[i].placeholder = savedText;
+    }
+  }
+}
 
-save = container.children('.saveBtn');
-console.log(save);
+
+createTable();
+loadStorage();
+
+save = container.children().children('.saveBtn');
+
+
+
+save.on('click', function () {
+  usrInput = $(this).siblings('input').val();
+  timeChoice = $(this).siblings('input').attr('hour');
+  localStorage.setItem(timeChoice, usrInput);
+})
